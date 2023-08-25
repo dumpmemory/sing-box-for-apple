@@ -3,6 +3,7 @@ import Library
 import SwiftUI
 
 public struct GroupListView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var isLoading = true
     @StateObject private var commandClient = CommandClient(.groups)
     @State private var groups: [OutboundGroup] = []
@@ -30,6 +31,13 @@ public struct GroupListView: View {
         }
         .onDisappear {
             commandClient.disconnect()
+        }
+        .onChangeCompat(of: scenePhase) { newValue in
+            if newValue == .active {
+                commandClient.connect()
+            } else {
+                commandClient.disconnect()
+            }
         }
         .onReceive(commandClient.$groups, perform: { groups in
             if let groups {
@@ -65,6 +73,9 @@ public struct GroupListView: View {
             while itemIterator.hasNext() {
                 let goItem = itemIterator.next()!
                 items.append(OutboundGroupItem(tag: goItem.tag, type: goItem.type, urlTestTime: Date(timeIntervalSince1970: Double(goItem.urlTestTime)), urlTestDelay: UInt16(goItem.urlTestDelay)))
+            }
+            if items.count < 2 {
+                continue
             }
             groups.append(OutboundGroup(tag: goGroup.tag, type: goGroup.type, selected: goGroup.selected, selectable: goGroup.selectable, isExpand: goGroup.isExpand, items: items))
         }
