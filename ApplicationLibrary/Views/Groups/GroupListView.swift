@@ -74,9 +74,6 @@ public struct GroupListView: View {
                 let goItem = itemIterator.next()!
                 items.append(OutboundGroupItem(tag: goItem.tag, type: goItem.type, urlTestTime: Date(timeIntervalSince1970: Double(goItem.urlTestTime)), urlTestDelay: UInt16(goItem.urlTestDelay)))
             }
-            if items.count < 2 {
-                continue
-            }
             groups.append(OutboundGroup(tag: goGroup.tag, type: goGroup.type, selected: goGroup.selected, selectable: goGroup.selectable, isExpand: goGroup.isExpand, items: items))
         }
         self.groups = groups
